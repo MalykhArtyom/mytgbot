@@ -51,3 +51,11 @@ def get_last_requests(limit: int = 10):
             (limit,),
         )
         return cur.fetchall()
+def count_recent_requests(user_id: int, hours: int = 1) -> int:
+    with closing(sqlite3.connect(DB_PATH)) as conn:
+        cur = conn.execute(
+            "SELECT COUNT(*) FROM requests "
+            "WHERE user_id = ? AND created_at >= datetime('now', ?)",
+            (user_id, f"-{hours} hours"),
+        )
+        return cur.fetchone()[0]
